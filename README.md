@@ -42,7 +42,7 @@ I build full-stack applications, with a focus on Java and Spring Boot backends a
 
 <div align="center">
 
-![GitHub stats](https://github-readme-stats.vercel.app/api?username=MObinXIV&show_icons=true&hide_border=true&theme=transparent)
-![Top languages](https://github-readme-stats.vercel.app/api/top-langs/?username=MObinXIV&layout=compact&hide_border=true&theme=transparent)
+<img src="./assets/github-stats.svg" alt="GitHub profile statistics" width="460">
+<img src="./assets/top-languages.svg" alt="Most-used programming languages across public repositories" width="330">
 
 </div>

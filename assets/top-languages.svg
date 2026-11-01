@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="330" height="190" viewBox="0 0 330 190" role="img">
+<style>
+  text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  .title { fill: #e6edf3; font-size: 15px; font-weight: 600; }
+  .muted { fill: #8b949e; font-size: 11px; }
+  .value { fill: #e6edf3; font-size: 22px; font-weight: 600; }
+</style>
+<rect x="0.5" y="0.5" width="329" height="189" rx="7" fill="#0d1117" stroke="#30363d"/>
+<text x="20" y="34" class="title">Top languages</text>
+<rect x="20.00" y="55" width="154.35" height="8" fill="#c6f36b"/>
+<rect x="174.35" y="55" width="83.58" height="8" fill="#79c0ff"/>
+<rect x="257.93" y="55" width="23.08" height="8" fill="#d2a8ff"/>
+<rect x="281.01" y="55" width="10.58" height="8" fill="#ffa657"/>
+<rect x="291.59" y="55" width="9.16" height="8" fill="#ff7b72"/>
+<rect x="20" y="55" width="290" height="8" rx="4" fill="none" stroke="#0d1117" stroke-width="1"/>
+<circle cx="25" cy="87" r="3" fill="#c6f36b"/><text x="36" y="91" class="muted">C++</text><text x="310" y="91" class="muted" text-anchor="end">53.2%</text>
+<circle cx="25" cy="107" r="3" fill="#79c0ff"/><text x="36" y="111" class="muted">Java</text><text x="310" y="111" class="muted" text-anchor="end">28.8%</text>
+<circle cx="25" cy="127" r="3" fill="#d2a8ff"/><text x="36" y="131" class="muted">TypeScript</text><text x="310" y="131" class="muted" text-anchor="end">8.0%</text>
+<circle cx="25" cy="147" r="3" fill="#ffa657"/><text x="36" y="151" class="muted">HTML</text><text x="310" y="151" class="muted" text-anchor="end">3.6%</text>
+<circle cx="25" cy="167" r="3" fill="#ff7b72"/><text x="36" y="171" class="muted">JavaScript</text><text x="310" y="171" class="muted" text-anchor="end">3.2%</text>
+</svg>
