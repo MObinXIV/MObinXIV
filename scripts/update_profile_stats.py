@@ -1,6 +1,8 @@
 import html
 import json
 import os
+import re
+from datetime import date
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -27,6 +29,35 @@ def get_json(url):
             return json.load(response)
     except (HTTPError, URLError, TimeoutError) as error:
         raise RuntimeError(f"GitHub API request failed for {url}: {error}") from error
+
+
+def get_contribution_count(year):
+    url = (
+        f"https://github.com/users/{USERNAME}/contributions"
+        f"?from={year}-01-01&to={year}-12-31"
+    )
+    request = Request(url, headers={"User-Agent": "MObinXIV-profile-stats"})
+    try:
+        with urlopen(request, timeout=30) as response:
+            page = response.read().decode("utf-8")
+    except (HTTPError, URLError, TimeoutError, UnicodeDecodeError) as error:
+        raise RuntimeError(
+            f"GitHub contributions request failed for {year}: {error}"
+        ) from error
+
+    heading = re.search(
+        r'<h2\b[^>]*id="js-contribution-activity-description"[^>]*>(.*?)</h2>',
+        page,
+        re.IGNORECASE | re.DOTALL,
+    )
+    if not heading:
+        raise RuntimeError(f"Could not find GitHub contribution total for {year}.")
+
+    heading_text = html.unescape(re.sub(r"<[^>]+>", " ", heading.group(1)))
+    result = re.search(r"([\d,]+)\s+contributions?\s+in\s+(\d{4})", heading_text)
+    if not result or int(result.group(2)) != year:
+        raise RuntimeError(f"Could not parse GitHub contribution total for {year}.")
+    return int(result.group(1).replace(",", ""))
 
 
 def svg_document(width, height, contents):
@@ -100,7 +131,18 @@ def make_languages_card(language_totals):
     return svg_document(330, 190, "\n".join(content))
 
 
+def make_contributions_card(contribution_count, year):
+    content = f"""<circle cx="110" cy="106" r="79" fill="#111614" stroke="#28312c" stroke-width="1"/>
+<circle cx="110" cy="106" r="68" fill="none" stroke="#c6f36b" stroke-width="2"/>
+<text x="110" y="106" text-anchor="middle" dominant-baseline="central" fill="#c6f36b" font-size="40" font-weight="700">{contribution_count:,}</text>
+<text x="110" y="192" text-anchor="middle" class="title">CONTRIBUTIONS</text>
+<text x="110" y="209" text-anchor="middle" class="muted">IN {year} SO FAR</text>"""
+    return svg_document(220, 220, content)
+
+
 def main():
+    current_year = date.today().year
+    contribution_count = get_contribution_count(current_year)
     user = get_json(f"{API}/users/{USERNAME}")
     repositories = []
     page = 1
@@ -133,9 +175,13 @@ def main():
     (OUTPUT / "top-languages.svg").write_text(
         make_languages_card(language_totals), encoding="utf-8"
     )
+    (OUTPUT / "contributions.svg").write_text(
+        make_contributions_card(contribution_count, current_year), encoding="utf-8"
+    )
     print(
         f"Updated profile cards for {len(repositories)} public repositories "
-        f"and {len(language_totals)} languages."
+        f"and {len(language_totals)} languages; "
+        f"{contribution_count} contributions in {current_year}."
     )
 
 

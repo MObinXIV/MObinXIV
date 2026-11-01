@@ -25,6 +25,7 @@ I build full-stack applications, with a focus on Java and Spring Boot backends a
 | [Book Social Network](https://github.com/MObinXIV/bookSocialNetwork) | A full-stack application for a book network management system. | Spring Boot, Angular, TypeScript |
 | [Chat API](https://github.com/MObinXIV/ChattingAPP) | A real-time messaging backend with chat, message history, and live updates. | Spring Boot, WebSocket, PostgreSQL, Keycloak |
 | [E-commerce API](https://github.com/MObinXIV/E-commerce-) | A Spring Boot backend for e-commerce. | Java, Spring Boot |
+| [C++ Practice — 0 to Hero](https://github.com/MObinXIV/a-Repo-to-get-back-My-level-of-the-devil) | An ongoing practice archive documenting my return to problem-solving, from programming fundamentals to algorithms, data structures, design patterns, and daily coding challenges. | C++, algorithms, data structures |
 
 ## Tech stack
 
@@ -37,6 +38,14 @@ I build full-stack applications, with a focus on Java and Spring Boot backends a
 ![Apache Kafka](https://img.shields.io/badge/Kafka-231F20?style=flat-square&logo=apachekafka&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
 ![Keycloak](https://img.shields.io/badge/Keycloak-4D4D4D?style=flat-square&logo=keycloak&logoColor=white)
+
+## Contributions
+
+<div align="center">
+
+<img src="./assets/contributions.svg" alt="GitHub contributions this year" width="220">
+
+</div>
 
 ## GitHub at a glance
 
