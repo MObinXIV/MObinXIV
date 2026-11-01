@@ -39,19 +39,11 @@ I build full-stack applications, with a focus on Java and Spring Boot backends a
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
 ![Keycloak](https://img.shields.io/badge/Keycloak-4D4D4D?style=flat-square&logo=keycloak&logoColor=white)
 
-## Contributions
-
-<div align="center">
-
-<img src="./assets/contributions.svg" alt="GitHub contributions this year" width="220">
-
-</div>
-
 ## GitHub at a glance
 
 <div align="center">
 
-<img src="./assets/github-stats.svg" alt="GitHub profile statistics" width="460">
+<img src="./assets/github-stats.svg" alt="GitHub statistics with contribution metrics and profile rank" width="495">
 <img src="./assets/top-languages.svg" alt="Most-used programming languages across public repositories" width="330">
 
 </div>

@@ -60,13 +60,80 @@ def get_contribution_count(year):
     return int(result.group(1).replace(",", ""))
 
 
+def get_activity_stats(year):
+    token = os.environ.get("GITHUB_TOKEN")
+    if not token:
+        raise RuntimeError("GITHUB_TOKEN is required to fetch profile activity stats.")
+
+    query = """
+    query ProfileActivity($login: String!, $from: DateTime!, $to: DateTime!) {
+      user(login: $login) {
+        contributionsCollection(from: $from, to: $to) {
+          totalPullRequestReviewContributions
+        }
+        pullRequests {
+          totalCount
+        }
+        issues {
+          totalCount
+        }
+        repositoriesContributedTo(
+          first: 1
+          contributionTypes: [COMMIT, ISSUE, PULL_REQUEST, REPOSITORY]
+        ) {
+          totalCount
+        }
+      }
+    }
+    """
+    payload = {
+        "query": query,
+        "variables": {
+            "login": USERNAME,
+            "from": f"{year}-01-01T00:00:00Z",
+            "to": f"{year}-12-31T23:59:59Z",
+        },
+    }
+    request = Request(
+        "https://api.github.com/graphql",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Accept": "application/vnd.github+json",
+            "Authorization": "Bearer " + token,
+            "Content-Type": "application/json",
+            "User-Agent": "MObinXIV-profile-stats",
+        },
+    )
+    try:
+        with urlopen(request, timeout=30) as response:
+            result = json.load(response)
+    except (HTTPError, URLError, TimeoutError) as error:
+        raise RuntimeError(f"GitHub GraphQL request failed: {error}") from error
+
+    if result.get("errors"):
+        messages = "; ".join(error.get("message", "Unknown GraphQL error") for error in result["errors"])
+        raise RuntimeError(f"GitHub GraphQL query failed: {messages}")
+
+    user = result.get("data", {}).get("user")
+    if not user:
+        raise RuntimeError(f"GitHub returned no public profile for {USERNAME}.")
+
+    return {
+        "pull_requests": user["pullRequests"]["totalCount"],
+        "issues": user["issues"]["totalCount"],
+        "reviews": user["contributionsCollection"]["totalPullRequestReviewContributions"],
+        "repositories": user["repositoriesContributedTo"]["totalCount"],
+    }
+
+
 def svg_document(width, height, contents):
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">
 <style>
   text {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }}
   .title {{ fill: #e6edf3; font-size: 15px; font-weight: 600; }}
   .muted {{ fill: #8b949e; font-size: 11px; }}
-  .value {{ fill: #e6edf3; font-size: 22px; font-weight: 600; }}
+  .label {{ fill: #8b949e; font-size: 11px; }}
+  .value {{ fill: #e6edf3; font-size: 15px; font-weight: 600; }}
 </style>
 <rect x="0.5" y="0.5" width="{width - 1}" height="{height - 1}" rx="7" fill="#0d1117" stroke="#30363d"/>
 {contents}
@@ -74,30 +141,52 @@ def svg_document(width, height, contents):
 """
 
 
-def make_stats_card(user, repositories):
+def calculate_rank(commits, activity, stars, followers):
+    exponential_cdf = lambda value: 1 - 2 ** -value
+    log_normal_cdf = lambda value: value / (1 + value)
+    score = 1 - (
+        2 * exponential_cdf(commits / 250)
+        + 3 * exponential_cdf(activity["pull_requests"] / 50)
+        + exponential_cdf(activity["issues"] / 25)
+        + exponential_cdf(activity["reviews"] / 2)
+        + 4 * log_normal_cdf(stars / 50)
+        + log_normal_cdf(followers / 10)
+    ) / 12
+
+    levels = ["S", "A+", "A", "A-", "B+", "B", "B-", "C+", "C"]
+    thresholds = [1, 12.5, 25, 37.5, 50, 62.5, 75, 87.5, 100]
+    return levels[next(index for index, threshold in enumerate(thresholds) if score * 100 <= threshold)]
+
+
+def make_stats_card(user, repositories, activity, commits, year):
     owned_repositories = [repo for repo in repositories if not repo["fork"]]
     stars = sum(repo["stargazers_count"] for repo in owned_repositories)
-    forks = sum(repo["forks_count"] for repo in owned_repositories)
+    rank = calculate_rank(commits, activity, stars, user["followers"])
     items = [
-        ("Public repos", user["public_repos"]),
-        ("Stars earned", stars),
-        ("Forks", forks),
+        ("Commits this year", commits),
+        ("Total PRs", activity["pull_requests"]),
+        ("Total issues", activity["issues"]),
+        ("Total stars", stars),
+        ("Repos contributed", activity["repositories"]),
     ]
 
-    content = ['<text x="24" y="34" class="title">GitHub statistics</text>']
-    content.append(
-        '<text x="24" y="55" class="muted">Public work, fetched directly from GitHub</text>'
-    )
-    for index, (label, value) in enumerate(items):
-        x = 24 + index * 143
-        content.append(
-            f'<text x="{x}" y="104" class="value">{value:,}</text>'
-            f'<text x="{x}" y="127" class="muted">{html.escape(label)}</text>'
-        )
-    content.append(
-        f'<text x="24" y="164" class="muted">Updated from the GitHub API · {html.escape(user["login"])}</text>'
-    )
-    return svg_document(460, 190, "\n".join(content))
+    content = [
+        f'<text x="24" y="34" class="title">{html.escape(user["login"])}&#39;s GitHub Stats</text>',
+        f'<text x="24" y="55" class="muted">Public activity · commits in {year}</text>',
+    ]
+    positions = [(28, 91), (245, 91), (28, 131), (245, 131), (28, 171)]
+    for (label, value), (x, y) in zip(items, positions):
+        content.append(f'<circle cx="{x}" cy="{y - 4}" r="3" fill="#c6f36b"/>')
+        content.append(f'<text x="{x + 12}" y="{y}" class="label">{html.escape(label)}</text>')
+        content.append(f'<text x="{x + 145}" y="{y}" class="value" text-anchor="end">{value:,}</text>')
+
+    content.extend([
+        '<circle cx="438" cy="106" r="37" fill="#111614" stroke="#30363d" stroke-width="2"/>',
+        '<circle cx="438" cy="106" r="32" fill="none" stroke="#c6f36b" stroke-width="2"/>',
+        f'<text x="438" y="106" text-anchor="middle" dominant-baseline="central" fill="#c6f36b" font-size="24" font-weight="700">{rank}</text>',
+        '<text x="438" y="158" text-anchor="middle" class="label">RANK</text>',
+    ])
+    return svg_document(495, 200, "\n".join(content))
 
 
 def make_languages_card(language_totals):
@@ -131,19 +220,11 @@ def make_languages_card(language_totals):
     return svg_document(330, 190, "\n".join(content))
 
 
-def make_contributions_card(contribution_count, year):
-    content = f"""<circle cx="110" cy="106" r="79" fill="#111614" stroke="#28312c" stroke-width="1"/>
-<circle cx="110" cy="106" r="68" fill="none" stroke="#c6f36b" stroke-width="2"/>
-<text x="110" y="106" text-anchor="middle" dominant-baseline="central" fill="#c6f36b" font-size="40" font-weight="700">{contribution_count:,}</text>
-<text x="110" y="192" text-anchor="middle" class="title">CONTRIBUTIONS</text>
-<text x="110" y="209" text-anchor="middle" class="muted">IN {year} SO FAR</text>"""
-    return svg_document(220, 220, content)
-
-
 def main():
     current_year = date.today().year
-    contribution_count = get_contribution_count(current_year)
+    commits = get_contribution_count(current_year)
     user = get_json(f"{API}/users/{USERNAME}")
+    activity = get_activity_stats(current_year)
     repositories = []
     page = 1
     while True:
@@ -170,18 +251,16 @@ def main():
 
     OUTPUT.mkdir(parents=True, exist_ok=True)
     (OUTPUT / "github-stats.svg").write_text(
-        make_stats_card(user, repositories), encoding="utf-8"
+        make_stats_card(user, repositories, activity, commits, current_year), encoding="utf-8"
     )
     (OUTPUT / "top-languages.svg").write_text(
         make_languages_card(language_totals), encoding="utf-8"
     )
-    (OUTPUT / "contributions.svg").write_text(
-        make_contributions_card(contribution_count, current_year), encoding="utf-8"
-    )
     print(
         f"Updated profile cards for {len(repositories)} public repositories "
         f"and {len(language_totals)} languages; "
-        f"{contribution_count} contributions in {current_year}."
+        f"{commits} commits in {current_year}; "
+        f"rank {calculate_rank(commits, activity, sum(repo['stargazers_count'] for repo in repositories if not repo['fork']), user['followers'])}."
     )
 
 
