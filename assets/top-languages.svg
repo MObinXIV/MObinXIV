@@ -3,18 +3,19 @@
   text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
   .title { fill: #e6edf3; font-size: 15px; font-weight: 600; }
   .muted { fill: #8b949e; font-size: 11px; }
-  .value { fill: #e6edf3; font-size: 22px; font-weight: 600; }
+  .label { fill: #8b949e; font-size: 11px; }
+  .value { fill: #e6edf3; font-size: 15px; font-weight: 600; }
 </style>
 <rect x="0.5" y="0.5" width="329" height="189" rx="7" fill="#0d1117" stroke="#30363d"/>
 <text x="20" y="34" class="title">Top languages</text>
-<rect x="20.00" y="55" width="153.64" height="8" fill="#c6f36b"/>
-<rect x="173.64" y="55" width="83.20" height="8" fill="#79c0ff"/>
-<rect x="256.84" y="55" width="22.97" height="8" fill="#d2a8ff"/>
-<rect x="279.82" y="55" width="10.54" height="8" fill="#ffa657"/>
-<rect x="290.35" y="55" width="9.11" height="8" fill="#ff7b72"/>
+<rect x="20.00" y="55" width="153.35" height="8" fill="#c6f36b"/>
+<rect x="173.35" y="55" width="83.05" height="8" fill="#79c0ff"/>
+<rect x="256.40" y="55" width="22.93" height="8" fill="#d2a8ff"/>
+<rect x="279.33" y="55" width="10.52" height="8" fill="#ffa657"/>
+<rect x="289.84" y="55" width="9.10" height="8" fill="#ff7b72"/>
 <rect x="20" y="55" width="290" height="8" rx="4" fill="none" stroke="#0d1117" stroke-width="1"/>
-<circle cx="25" cy="87" r="3" fill="#c6f36b"/><text x="36" y="91" class="muted">C++</text><text x="310" y="91" class="muted" text-anchor="end">53.0%</text>
-<circle cx="25" cy="107" r="3" fill="#79c0ff"/><text x="36" y="111" class="muted">Java</text><text x="310" y="111" class="muted" text-anchor="end">28.7%</text>
+<circle cx="25" cy="87" r="3" fill="#c6f36b"/><text x="36" y="91" class="muted">C++</text><text x="310" y="91" class="muted" text-anchor="end">52.9%</text>
+<circle cx="25" cy="107" r="3" fill="#79c0ff"/><text x="36" y="111" class="muted">Java</text><text x="310" y="111" class="muted" text-anchor="end">28.6%</text>
 <circle cx="25" cy="127" r="3" fill="#d2a8ff"/><text x="36" y="131" class="muted">TypeScript</text><text x="310" y="131" class="muted" text-anchor="end">7.9%</text>
 <circle cx="25" cy="147" r="3" fill="#ffa657"/><text x="36" y="151" class="muted">HTML</text><text x="310" y="151" class="muted" text-anchor="end">3.6%</text>
 <circle cx="25" cy="167" r="3" fill="#ff7b72"/><text x="36" y="171" class="muted">JavaScript</text><text x="310" y="171" class="muted" text-anchor="end">3.1%</text>
