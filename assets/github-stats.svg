@@ -11,7 +11,7 @@
 <text x="24" y="55" class="muted">Public activity · commits in 2026</text>
 <circle cx="28" cy="87" r="3" fill="#c6f36b"/>
 <text x="40" y="91" class="label">Commits this year</text>
-<text x="173" y="91" class="value" text-anchor="end">131</text>
+<text x="173" y="91" class="value" text-anchor="end">132</text>
 <circle cx="245" cy="87" r="3" fill="#c6f36b"/>
 <text x="257" y="91" class="label">Total PRs</text>
 <text x="390" y="91" class="value" text-anchor="end">1</text>
